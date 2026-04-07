@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useGameState } from '@/hooks/useGameState';
 import { type GameItem, type Zone, levels } from '@/data/gameData';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
@@ -15,6 +15,14 @@ const Index = () => {
   const [draggedItem, setDraggedItem] = useState<GameItem | null>(null);
   const [selectedItem, setSelectedItem] = useState<GameItem | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const prevShowComplete = useRef(false);
+
+  useEffect(() => {
+    if (state.showLevelComplete && !prevShowComplete.current) {
+      sound.playLevelComplete();
+    }
+    prevShowComplete.current = state.showLevelComplete;
+  }, [state.showLevelComplete, sound]);
 
   const handleDragStart = useCallback((item: GameItem) => {
     setDraggedItem(item);
@@ -23,14 +31,17 @@ const Index = () => {
 
   const handleDrop = useCallback((itemId: string, zone: Zone) => {
     sound.playDrop();
-    const result = placeItem(itemId, zone);
-    if (result === true) {
-      sound.playCorrect();
-    } else if (result === false) {
-      sound.playIncorrect();
+    const item = currentLevelData.items.find(i => i.id === itemId);
+    if (item) {
+      const isCorrect = item.zone === zone;
+      placeItem(itemId, zone);
+      setTimeout(() => {
+        if (isCorrect) sound.playCorrect();
+        else sound.playIncorrect();
+      }, 100);
     }
     setDraggedItem(null);
-  }, [placeItem, sound]);
+  }, [placeItem, sound, currentLevelData]);
 
   const handleCardTap = useCallback((item: GameItem) => {
     sound.playPickup();
@@ -40,12 +51,12 @@ const Index = () => {
   const handleZoneTap = useCallback((zone: Zone) => {
     if (selectedItem) {
       sound.playDrop();
-      const result = placeItem(selectedItem.id, zone);
-      if (result === true) {
-        sound.playCorrect();
-      } else if (result === false) {
-        sound.playIncorrect();
-      }
+      const isCorrect = selectedItem.zone === zone;
+      placeItem(selectedItem.id, zone);
+      setTimeout(() => {
+        if (isCorrect) sound.playCorrect();
+        else sound.playIncorrect();
+      }, 100);
       setSelectedItem(null);
     }
   }, [selectedItem, placeItem, sound]);
@@ -59,13 +70,6 @@ const Index = () => {
     currentLevelData.items.filter(i => state.placedItems[i.id] === zone).length;
 
   const progress = Object.keys(state.placedItems).length / currentLevelData.items.length;
-
-  // Play level complete sound
-  const prevShowComplete = useState(false);
-  if (state.showLevelComplete && !prevShowComplete[0]) {
-    sound.playLevelComplete();
-  }
-  prevShowComplete[1](state.showLevelComplete);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
