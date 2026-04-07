@@ -8,9 +8,8 @@ interface DropZoneProps {
 }
 
 const zoneConfig = {
-  ocean: { emoji: '🌊', label: 'Ocean', glassClass: 'glass-ocean', gradient: 'from-[hsl(199,89%,48%/0.1)] to-[hsl(210,80%,25%/0.1)]' },
-  forest: { emoji: '🌱', label: 'Forest', glassClass: 'glass-forest', gradient: 'from-[hsl(142,71%,45%/0.1)] to-[hsl(150,60%,20%/0.1)]' },
-  recycle: { emoji: '♻️', label: 'Recycle', glassClass: 'glass-recycle', gradient: 'from-[hsl(45,93%,58%/0.1)] to-[hsl(30,70%,35%/0.1)]' },
+  ocean: { emoji: '🌊', label: 'Ocean', sublabel: 'Life Below Water', glassClass: 'glass-ocean' },
+  forest: { emoji: '🌱', label: 'Forest', sublabel: 'Life on Land', glassClass: 'glass-forest' },
 };
 
 const DropZone = ({ zone, onDrop, placedCount }: DropZoneProps) => {
@@ -37,18 +36,21 @@ const DropZone = ({ zone, onDrop, placedCount }: DropZoneProps) => {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`${config.glassClass} rounded-2xl p-6 flex flex-col items-center justify-center gap-3 min-h-[180px] transition-all duration-300 ${
+      className={`${config.glassClass} rounded-2xl p-6 flex flex-col items-center justify-center gap-2 min-h-[200px] transition-all duration-300 relative ${
         isOver ? 'drop-hover scale-105 ring-2 ring-foreground/20' : ''
       }`}
     >
-      <span className={`text-5xl md:text-6xl transition-transform duration-300 ${isOver ? 'scale-125' : ''}`}>
+      <span className={`text-5xl md:text-7xl transition-transform duration-300 ${isOver ? 'scale-125' : ''}`}>
         {config.emoji}
       </span>
-      <span className="font-display font-bold text-lg text-foreground">
+      <span className="font-display font-bold text-xl text-foreground">
         {config.label}
       </span>
+      <span className="text-xs text-muted-foreground font-body">
+        {config.sublabel}
+      </span>
       {placedCount > 0 && (
-        <div className="glass rounded-full px-3 py-1 text-sm font-body text-muted-foreground">
+        <div className="glass rounded-full px-3 py-1 text-sm font-body text-muted-foreground mt-1">
           {placedCount} sorted
         </div>
       )}

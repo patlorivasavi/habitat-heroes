@@ -1,5 +1,4 @@
-import { badges } from '@/data/gameData';
-import { levels } from '@/data/gameData';
+import { badges, levels } from '@/data/gameData';
 
 interface LevelCompleteProps {
   level: number;
@@ -15,14 +14,17 @@ interface LevelCompleteProps {
 
 const LevelComplete = ({ level, stars, chocoCoins, mistakes, earnedBadges, isLastLevel, onNext, onRestart, onRestartGame }: LevelCompleteProps) => {
   const levelData = levels.find(l => l.id === level)!;
-  
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-sm">
       <div className="glass rounded-3xl p-8 max-w-md mx-4 text-center animate-bounce-in">
         <h2 className="font-display text-3xl font-bold text-foreground mb-2">
           {isLastLevel ? '🏆 Game Complete!' : '🎉 Level Complete!'}
         </h2>
-        <p className="text-muted-foreground font-body mb-4">{levelData.name}</p>
+        <p className="text-muted-foreground font-body mb-1">{levelData.name}</p>
+        <p className="text-xs text-muted-foreground font-body mb-4">
+          SDG {levelData.sdg} · {levelData.sdg === 14 ? 'Life Below Water' : 'Life on Land'}
+        </p>
 
         {/* Stars */}
         <div className="flex justify-center gap-2 mb-6">
@@ -77,7 +79,7 @@ const LevelComplete = ({ level, stars, chocoCoins, mistakes, earnedBadges, isLas
           <p className="text-xs text-muted-foreground">
             {level === 1 && "Over 80% of the ocean remains unexplored and unmapped!"}
             {level === 2 && "Forests cover about 31% of Earth's land surface!"}
-            {level === 3 && "8 million tons of plastic enter the ocean every year!"}
+            {level === 3 && "Healthy ecosystems can recover from damage if protected in time!"}
             {level === 4 && "One tree can absorb 48 pounds of CO2 per year!"}
           </p>
         </div>

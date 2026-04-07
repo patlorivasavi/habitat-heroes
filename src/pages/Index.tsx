@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useGameState } from '@/hooks/useGameState';
 import { type GameItem, type Zone, levels } from '@/data/gameData';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import GameHeader from '@/components/GameHeader';
 import GameCard from '@/components/GameCard';
@@ -10,34 +11,61 @@ import LevelComplete from '@/components/LevelComplete';
 
 const Index = () => {
   const { state, currentLevelData, remainingItems, placeItem, nextLevel, restartLevel, restartGame, allBadges } = useGameState();
+  const sound = useSoundEffects();
   const [draggedItem, setDraggedItem] = useState<GameItem | null>(null);
   const [selectedItem, setSelectedItem] = useState<GameItem | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   const handleDragStart = useCallback((item: GameItem) => {
     setDraggedItem(item);
-  }, []);
+    sound.playPickup();
+  }, [sound]);
 
   const handleDrop = useCallback((itemId: string, zone: Zone) => {
-    placeItem(itemId, zone);
+    sound.playDrop();
+    const result = placeItem(itemId, zone);
+    if (result === true) {
+      sound.playCorrect();
+    } else if (result === false) {
+      sound.playIncorrect();
+    }
     setDraggedItem(null);
-  }, [placeItem]);
+  }, [placeItem, sound]);
 
-  // Touch-based: tap card then tap zone
   const handleCardTap = useCallback((item: GameItem) => {
+    sound.playPickup();
     setSelectedItem(prev => prev?.id === item.id ? null : item);
-  }, []);
+  }, [sound]);
 
   const handleZoneTap = useCallback((zone: Zone) => {
     if (selectedItem) {
-      placeItem(selectedItem.id, zone);
+      sound.playDrop();
+      const result = placeItem(selectedItem.id, zone);
+      if (result === true) {
+        sound.playCorrect();
+      } else if (result === false) {
+        sound.playIncorrect();
+      }
       setSelectedItem(null);
     }
-  }, [selectedItem, placeItem]);
+  }, [selectedItem, placeItem, sound]);
+
+  const handleToggleSound = useCallback(() => {
+    const newState = sound.toggle();
+    setSoundEnabled(newState);
+  }, [sound]);
 
   const placedByZone = (zone: Zone) =>
     currentLevelData.items.filter(i => state.placedItems[i.id] === zone).length;
 
   const progress = Object.keys(state.placedItems).length / currentLevelData.items.length;
+
+  // Play level complete sound
+  const prevShowComplete = useState(false);
+  if (state.showLevelComplete && !prevShowComplete[0]) {
+    sound.playLevelComplete();
+  }
+  prevShowComplete[1](state.showLevelComplete);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
@@ -50,7 +78,16 @@ const Index = () => {
         completedLevels={state.completedLevels}
         timeRemaining={state.timeRemaining}
         earnedBadges={state.earnedBadges}
+        soundEnabled={soundEnabled}
+        onToggleSound={handleToggleSound}
       />
+
+      {/* Level description */}
+      <div className="w-full max-w-6xl mx-auto px-4 mb-2">
+        <p className="text-center text-sm text-muted-foreground font-body italic">
+          {currentLevelData.description}
+        </p>
+      </div>
 
       {/* Progress bar */}
       <div className="w-full max-w-6xl mx-auto px-4 mb-4">
@@ -75,9 +112,9 @@ const Index = () => {
       )}
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 pb-8 flex flex-col gap-6">
-        {/* Drop Zones */}
-        <div className="grid grid-cols-3 gap-4">
-          {(['ocean', 'forest', 'recycle'] as Zone[]).map(zone => (
+        {/* Drop Zones - 2 columns */}
+        <div className="grid grid-cols-2 gap-4">
+          {(['ocean', 'forest'] as Zone[]).map(zone => (
             <div key={zone} onClick={() => handleZoneTap(zone)}>
               <DropZone zone={zone} onDrop={handleDrop} placedCount={placedByZone(zone)} />
             </div>
@@ -87,7 +124,7 @@ const Index = () => {
         {/* Draggable Cards */}
         <div>
           <p className="text-center text-sm text-muted-foreground mb-3 font-body">
-            {remainingItems.length > 0 ? '👆 Drag each item to the correct zone!' : '✅ All items sorted!'}
+            {remainingItems.length > 0 ? '👆 Drag each item to the correct habitat!' : '✅ All items sorted!'}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {remainingItems.map(item => (

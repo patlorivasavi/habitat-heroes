@@ -1,4 +1,4 @@
-export type Zone = 'ocean' | 'forest' | 'recycle';
+export type Zone = 'ocean' | 'forest';
 
 export interface GameItem {
   id: string;
@@ -11,8 +11,10 @@ export interface GameItem {
 export interface Level {
   id: number;
   name: string;
+  description: string;
+  sdg: 14 | 15;
   items: GameItem[];
-  timeLimit?: number; // seconds, for timed levels
+  timeLimit?: number;
 }
 
 export interface Badge {
@@ -26,7 +28,7 @@ export interface Badge {
 export const badges: Badge[] = [
   { id: 'ocean-protector', name: 'Ocean Protector', emoji: '🐋', description: 'Correctly sorted all ocean creatures', requirement: 'Complete Level 1 with no ocean mistakes' },
   { id: 'forest-guardian', name: 'Forest Guardian', emoji: '🦁', description: 'Protected the forest habitat', requirement: 'Complete Level 2 with no forest mistakes' },
-  { id: 'eco-warrior', name: 'Eco Warrior', emoji: '♻️', description: 'Identified all pollution items', requirement: 'Complete Level 3 perfectly' },
+  { id: 'eco-warrior', name: 'Eco Warrior', emoji: '🌍', description: 'Master of all habitats', requirement: 'Complete Level 3 perfectly' },
   { id: 'speed-hero', name: 'Speed Hero', emoji: '⚡', description: 'Beat the timed challenge', requirement: 'Complete Level 4 with time remaining' },
   { id: 'choco-master', name: 'Choco Master', emoji: '🍫', description: 'Earned 200+ Choco Coins', requirement: 'Accumulate 200 Choco Coins' },
 ];
@@ -35,6 +37,8 @@ export const levels: Level[] = [
   {
     id: 1,
     name: 'Animal Kingdom',
+    description: 'Sort animals into their natural habitats',
+    sdg: 14,
     items: [
       { id: '1-1', name: 'Clownfish', emoji: '🐠', zone: 'ocean', fact: 'Clownfish live among sea anemones in warm ocean waters!' },
       { id: '1-2', name: 'Lion', emoji: '🦁', zone: 'forest', fact: 'Lions are called the King of the Jungle and live in grasslands and forests!' },
@@ -47,6 +51,8 @@ export const levels: Level[] = [
   {
     id: 2,
     name: 'Plants & Corals',
+    description: 'Learn about underwater and terrestrial plant life',
+    sdg: 14,
     items: [
       { id: '2-1', name: 'Coral Reef', emoji: '🪸', zone: 'ocean', fact: 'Coral reefs support 25% of all marine life!' },
       { id: '2-2', name: 'Sunflower', emoji: '🌻', zone: 'forest', fact: 'Sunflowers follow the sun across the sky each day!' },
@@ -60,33 +66,37 @@ export const levels: Level[] = [
   },
   {
     id: 3,
-    name: 'Pollution Alert!',
+    name: 'Ecosystem Experts',
+    description: 'Advanced habitat classification challenge',
+    sdg: 15,
     items: [
-      { id: '3-1', name: 'Plastic Bottle', emoji: '🧴', zone: 'recycle', fact: 'Plastic bottles take 450 years to decompose in the ocean!' },
-      { id: '3-2', name: 'Octopus', emoji: '🐙', zone: 'ocean', fact: 'Octopuses have 3 hearts and blue blood!' },
-      { id: '3-3', name: 'Shopping Bag', emoji: '🛍️', zone: 'recycle', fact: 'Plastic bags kill 100,000 marine animals every year!' },
-      { id: '3-4', name: 'Bear', emoji: '🐻', zone: 'forest', fact: 'Bears play a vital role in forest ecosystems!' },
-      { id: '3-5', name: 'Oil Barrel', emoji: '🛢️', zone: 'recycle', fact: 'Oil spills can devastate marine ecosystems for decades!' },
-      { id: '3-6', name: 'Starfish', emoji: '⭐', zone: 'ocean', fact: 'Starfish can regenerate their arms!' },
-      { id: '3-7', name: 'Trash Can', emoji: '🗑️', zone: 'recycle', fact: 'Proper waste disposal keeps habitats clean and safe!' },
-      { id: '3-8', name: 'Eagle', emoji: '🦅', zone: 'forest', fact: 'Eagles are apex predators that indicate ecosystem health!' },
+      { id: '3-1', name: 'Octopus', emoji: '🐙', zone: 'ocean', fact: 'Octopuses have 3 hearts and blue blood!' },
+      { id: '3-2', name: 'Bear', emoji: '🐻', zone: 'forest', fact: 'Bears play a vital role in forest ecosystems!' },
+      { id: '3-3', name: 'Starfish', emoji: '⭐', zone: 'ocean', fact: 'Starfish can regenerate their arms!' },
+      { id: '3-4', name: 'Eagle', emoji: '🦅', zone: 'forest', fact: 'Eagles are apex predators that indicate ecosystem health!' },
+      { id: '3-5', name: 'Seahorse', emoji: '🐴', zone: 'ocean', fact: 'Male seahorses carry babies — unique in the animal kingdom!' },
+      { id: '3-6', name: 'Fox', emoji: '🦊', zone: 'forest', fact: 'Foxes help control rodent populations in forests!' },
+      { id: '3-7', name: 'Stingray', emoji: '🐟', zone: 'ocean', fact: 'Stingrays are closely related to sharks!' },
+      { id: '3-8', name: 'Hedgehog', emoji: '🦔', zone: 'forest', fact: 'Hedgehogs eat garden pests and help maintain healthy ecosystems!' },
     ],
   },
   {
     id: 4,
     name: 'Speed Challenge!',
+    description: 'Race against the clock — sort them all!',
+    sdg: 15,
     timeLimit: 45,
     items: [
       { id: '4-1', name: 'Shark', emoji: '🦈', zone: 'ocean', fact: 'Sharks keep ocean ecosystems balanced!' },
       { id: '4-2', name: 'Wolf', emoji: '🐺', zone: 'forest', fact: 'Wolves help control deer populations in forests!' },
-      { id: '4-3', name: 'Soda Can', emoji: '🥫', zone: 'recycle', fact: 'Recycling one aluminum can saves enough energy to power a TV for 3 hours!' },
-      { id: '4-4', name: 'Seahorse', emoji: '🐴', zone: 'ocean', fact: 'Male seahorses carry babies — unique in the animal kingdom!' },
-      { id: '4-5', name: 'Owl', emoji: '🦉', zone: 'forest', fact: 'Owls can rotate their heads 270 degrees!' },
-      { id: '4-6', name: 'Battery', emoji: '🔋', zone: 'recycle', fact: 'Batteries contain toxic chemicals that pollute soil and water!' },
-      { id: '4-7', name: 'Crab', emoji: '🦀', zone: 'ocean', fact: 'Crabs help clean the ocean floor!' },
-      { id: '4-8', name: 'Rabbit', emoji: '🐇', zone: 'forest', fact: 'Rabbits help aerate soil with their burrows!' },
-      { id: '4-9', name: 'Newspaper', emoji: '📰', zone: 'recycle', fact: 'Recycling paper saves 17 trees per ton!' },
-      { id: '4-10', name: 'Penguin', emoji: '🐧', zone: 'ocean', fact: 'Penguins are excellent swimmers and spend most of their life in water!' },
+      { id: '4-3', name: 'Penguin', emoji: '🐧', zone: 'ocean', fact: 'Penguins are excellent swimmers and spend most of their life in water!' },
+      { id: '4-4', name: 'Owl', emoji: '🦉', zone: 'forest', fact: 'Owls can rotate their heads 270 degrees!' },
+      { id: '4-5', name: 'Crab', emoji: '🦀', zone: 'ocean', fact: 'Crabs help clean the ocean floor!' },
+      { id: '4-6', name: 'Rabbit', emoji: '🐇', zone: 'forest', fact: 'Rabbits help aerate soil with their burrows!' },
+      { id: '4-7', name: 'Seal', emoji: '🦭', zone: 'ocean', fact: 'Seals can hold their breath for up to 2 hours!' },
+      { id: '4-8', name: 'Squirrel', emoji: '🐿️', zone: 'forest', fact: 'Squirrels plant thousands of trees by forgetting where they buried acorns!' },
+      { id: '4-9', name: 'Orca', emoji: '🐋', zone: 'ocean', fact: 'Orcas are the largest members of the dolphin family!' },
+      { id: '4-10', name: 'Parrot', emoji: '🦜', zone: 'forest', fact: 'Parrots help spread seeds across tropical forests!' },
     ],
   },
 ];
@@ -106,9 +116,9 @@ export const quizQuestions = [
   },
   {
     levelId: 3,
-    question: 'How long does a plastic bottle take to decompose?',
-    options: ['10 years', '50 years', '100 years', '450 years'],
-    correct: 3,
+    question: 'How many hearts does an octopus have?',
+    options: ['1', '2', '3', '4'],
+    correct: 2,
   },
   {
     levelId: 4,

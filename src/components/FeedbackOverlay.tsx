@@ -20,7 +20,6 @@ const FeedbackOverlay = ({ type, message, emoji }: FeedbackOverlayProps) => {
         </p>
       </div>
 
-      {/* Splash / confetti effect */}
       {type === 'correct' && (
         <>
           {Array.from({ length: 8 }).map((_, i) => (

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { levels, type Zone, type GameItem, type Badge, badges } from '@/data/gameData';
+import { levels, type Zone, type GameItem, badges } from '@/data/gameData';
 
 export interface GameState {
   currentLevel: number;
@@ -35,7 +35,6 @@ export function useGameState() {
   const currentLevelData = levels.find(l => l.id === state.currentLevel)!;
   const remainingItems = currentLevelData.items.filter(item => !state.placedItems[item.id]);
 
-  // Timer for timed levels
   useEffect(() => {
     if (currentLevelData.timeLimit && state.timeRemaining === null && !state.showLevelComplete) {
       setState(s => ({ ...s, timeRemaining: currentLevelData.timeLimit! }));
@@ -68,7 +67,6 @@ export function useGameState() {
       const newMistakes = s.mistakes + (isCorrect ? 0 : 1);
       const allPlaced = currentLevelData.items.every(i => newPlaced[i.id]);
 
-      // Calculate stars
       const totalItems = currentLevelData.items.length;
       const correctCount = currentLevelData.items.filter(i => newPlaced[i.id] === i.zone).length;
       const accuracy = correctCount / totalItems;
@@ -84,24 +82,24 @@ export function useGameState() {
           item,
           message: isCorrect
             ? `🎉 +10 Choco Coins! ${item.fact}`
-            : `Oops! ${item.name} doesn't belong there. Hint: ${item.zone === 'ocean' ? '🌊 This belongs in the ocean!' : item.zone === 'forest' ? '🌱 This belongs in the forest!' : '♻️ This should be recycled!'}`,
+            : `Oops! ${item.name} doesn't belong there. Hint: ${item.zone === 'ocean' ? '🌊 This belongs in the ocean!' : '🌱 This belongs in the forest!'}`,
         },
         showLevelComplete: allPlaced && isCorrect,
         stars: allPlaced && isCorrect ? stars : s.stars,
       };
     });
 
-    // Auto-clear feedback
     setTimeout(() => {
       setState(s => ({ ...s, feedback: null }));
     }, 2500);
+
+    return isCorrect;
   }, [currentLevelData, state.placedItems]);
 
   const nextLevel = useCallback(() => {
     const next = state.currentLevel + 1;
     if (next > levels.length) return;
 
-    // Check badges
     const newBadges = [...state.earnedBadges];
     if (state.currentLevel === 1 && state.stars === 3) newBadges.push('ocean-protector');
     if (state.currentLevel === 2 && state.stars === 3) newBadges.push('forest-guardian');
